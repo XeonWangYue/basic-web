@@ -1,0 +1,25 @@
+{
+  "name": "nuxt-demo",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@element-plus/nuxt": "^1.1.5",
+    "@nuxt/icon": "^2.2.1",
+    "@pinia/nuxt": "^0.11.3",
+    "@vscode/codicons": "^0.0.45",
+    "@vueuse/nuxt": "^14.2.1",
+    "element-plus": "^2.13.7",
+    "monaco-editor": "^0.55.1",
+    "nuxt": "^4.4.2",
+    "nuxt-monaco-editor": "^1.4.0",
+    "vue": "^3.5.32",
+    "vue-router": "^5.0.4"
+  }
+}
