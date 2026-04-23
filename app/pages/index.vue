@@ -1,30 +1,20 @@
 <script setup>
-const code = ref(`console.log('Hello Monaco + Nuxt!')`)
+const apiToken = ref('')
 
-const editorRef = useTemplateRef("editorRef")
-
-const commitCode = () => {
-    let formData = new FormData()
-    formData.append("language", "javascript");
-    formData.append("code", new File([code.value], "code.js", {
-        type: "text/plain", // 文件类型
-    }));
-
-    $fetch(`/api/commit/${1}`, {
+const handleLogin = () => {
+    $fetch("/api/auth/login", {
         method: "POST",
-        body: formData
-    }).then((response) => {
-        console.log(response)
+        params: {
+            "initToken": apiToken.value
+        }
+    }).then((res) => {
+        console.log(res)
     })
 }
-</script>
-<template>
 
-    <el-button type="primary" @click="commitCode">提交</el-button>
-    <div style="height:800px">
-        <ClientOnly>
-            <MonacoEditor v-model="code" lang="javascript" theme="vs-dark"
-                :options="{ automaticLayout: true, minimap: { enabled: false } }" :style="{ height: '100%' }" />
-        </ClientOnly>
-    </div>
+</script>
+
+<template>
+    <el-button @click="handleLogin">登录</el-button>
+    <el-input v-model="apiToken" type="password"></el-input>
 </template>
