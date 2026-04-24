@@ -1,21 +1,25 @@
 <script setup>
+const { accessToken } = useAuth()
 const code = ref(`console.log('Hello Monaco + Nuxt!')`)
 
 const editorRef = useTemplateRef("editorRef")
 
-const commitCode = () => {
+const commitCode = async () => {
     let formData = new FormData()
     formData.append("language", "javascript");
     formData.append("code", new File([code.value], "code.js", {
         type: "text/plain", // 文件类型
     }));
 
-    $fetch(`/api/commit/${1}`, {
+    const { data } = await $fetch(`/api/commit/${1}`, {
         method: "POST",
+        headers: {
+            Authorization: `Bearer ${accessToken.value}`
+        },
         body: formData
-    }).then((response) => {
-        console.log(response)
     })
+
+    console.log(data)
 }
 </script>
 

@@ -1,12 +1,12 @@
 <script setup>
-
+const { accessToken, logout } = useAuth()
 
 </script>
 <template>
   <NuxtRouteAnnouncer />
   <el-container class="main-container">
     <el-aside width="200px">
-      <el-menu @open="handleOpen" class="main-menu" :router="true">
+      <el-menu class="main-menu" :router="true">
         <el-menu-item index="/">
           首页
         </el-menu-item>
@@ -16,7 +16,14 @@
       </el-menu>
     </el-aside>
     <el-container>
-      <el-header :height="60">Header</el-header>
+      <el-header height="60">
+        <el-row justify="space-between">
+          <el-col :span="2">Header</el-col>
+          <el-col :span="2">
+            <el-button type="primary" @click="logout" v-show="accessToken">登出</el-button>
+          </el-col>
+        </el-row>
+      </el-header>
       <el-main>
         <NuxtPage />
       </el-main>
