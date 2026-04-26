@@ -17,13 +17,13 @@ const { accessToken, logout } = useAuth()
     </el-aside>
     <el-container>
       <el-header class="header-row">
-        <el-row justify="space-between" class="header-row-container">
-          <el-col :span="2">Header</el-col>
-          <el-col :span="2">
+        <el-row class="header-row-container">
+          <div class="header-title">Online Judge后台管理系统</div>
+          <div class="header-user">
             <ClientOnly>
               <el-button type="primary" @click="logout" v-show="accessToken">登出</el-button>
             </ClientOnly>
-          </el-col>
+          </div>
         </el-row>
       </el-header>
       <el-main>
@@ -51,5 +51,21 @@ const { accessToken, logout } = useAuth()
 .header-row-container {
   height: 100%;
   align-items: center;
+}
+
+.header-title {
+  font-family: 'DingTalk Sans';
+  font-size: 26px;
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .header-title {
+    display: none;
+  }
+}
+
+.header-user {
+  margin-left: auto;
 }
 </style>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台管理系统首页</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome图标 -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入Chart.js图表库 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- 自定义Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF', // 主色调（简约蓝）
+                        secondary: '#6B7280',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      /* 滚动条美化 */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 3px;
+      }
+      .card-shadow {
+        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 左侧菜单栏（固定200px） -->
+        <aside class="w-[200px] bg-white h-full border-r border-gray-200 flex flex-col z-10">
+            <!-- 菜单Logo -->
+            <div class="h-[40px] flex items-center justify-center border-b border-gray-200">
+                <h1 class="text-primary font-bold text-lg">管理系统</h1>
+            </div>
+            <!-- 菜单列表 -->
+            <nav class="flex-1 py-4 overflow-y-auto custom-scrollbar">
+                <ul class="px-2 space-y-1">
+                    <li>
+                        <a href="#"
+                            class="flex items-center gap-2 px-4 py-2 text-sm bg-primary/5 text-primary rounded-md">
+                            <i class="fa fa-home"></i> 首页
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors">
+                            <i class="fa fa-user"></i> 用户管理
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors">
+                            <i class="fa fa-bar-chart"></i> 数据统计
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors">
+                            <i class="fa fa-cog"></i> 系统设置
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 右侧主体内容 -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部Header（固定40px） -->
+            <header class="h-[40px] bg-white border-b border-gray-200 flex items-center justify-between px-4 z-10">
+                <div class="text-sm text-gray-600">欢迎使用管理系统</div>
+                <div class="flex items-center gap-3">
+                    <i class="fa fa-bell-o text-gray-500 cursor-pointer"></i>
+                    <div class="flex items-center gap-1">
+                        <img src="https://picsum.photos/32/32" alt="头像" class="w-6 h-6 rounded-full object-cover">
+                        <span class="text-sm text-gray-700">管理员</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 主内容区域（可滚动） -->
+            <main class="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                <div class="max-w-7xl mx-auto space-y-4">
+                    <!-- 页面标题 -->
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-gray-800">控制台首页</h2>
+                        <p class="text-sm text-gray-500">2025年12月19日</p>
+                    </div>
+
+                    <!-- 核心数据卡片区（在线用户 + 今日访问 + API统计） -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- 在线用户数 -->
+                        <div class="bg-white rounded-lg p-4 card-shadow">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-500">在线用户数</p>
+                                    <h3 class="text-2xl font-bold text-gray-800 mt-1">1,289</h3>
+                                </div>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <i class="fa fa-users"></i>
+                                </div>
+                            </div>
+                            <p class="text-xs text-success mt-3"><i class="fa fa-arrow-up"></i> 较昨日 +12.5%</p>
+                        </div>
+
+                        <!-- 今日累计访问 -->
+                        <div class="bg-white rounded-lg p-4 card-shadow">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-500">今日累计访问</p>
+                                    <h3 class="text-2xl font-bold text-gray-800 mt-1">8,562</h3>
+                                </div>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center text-warning">
+                                    <i class="fa fa-eye"></i>
+                                </div>
+                            </div>
+                            <p class="text-xs text-success mt-3"><i class="fa fa-arrow-up"></i> 较昨日 +8.2%</p>
+                        </div>
+
+                        <!-- API访问统计 -->
+                        <div class="bg-white rounded-lg p-4 card-shadow">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-500">API访问次数</p>
+                                    <h3 class="text-2xl font-bold text-gray-800 mt-1">26,731</h3>
+                                </div>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center text-success">
+                                    <i class="fa fa-code"></i>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-3">数据接口总调用量</p>
+                        </div>
+                    </div>
+
+                    <!-- 多功能卡片区 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <!-- 数据图表卡片 -->
+                        <div class="bg-white rounded-lg p-4 card-shadow lg:col-span-2">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-sm font-medium text-gray-800">近7日访问趋势</h3>
+                                <i class="fa fa-ellipsis-h text-gray-400 cursor-pointer"></i>
+                            </div>
+                            <div class="h-64">
+                                <canvas id="visitChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- 功能入口卡片 -->
+                        <div class="bg-white rounded-lg p-4 card-shadow">
+                            <h3 class="text-sm font-medium text-gray-800 mb-4">快捷功能</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <a href="#"
+                                    class="flex flex-col items-center justify-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <i class="fa fa-plus-circle text-primary text-xl mb-2"></i>
+                                    <span class="text-xs text-gray-600">新增用户</span>
+                                </a>
+                                <a href="#"
+                                    class="flex flex-col items-center justify-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <i class="fa fa-file-text-o text-warning text-xl mb-2"></i>
+                                    <span class="text-xs text-gray-600">导出数据</span>
+                                </a>
+                                <a href="#"
+                                    class="flex flex-col items-center justify-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <i class="fa fa-cog text-secondary text-xl mb-2"></i>
+                                    <span class="text-xs text-gray-600">系统配置</span>
+                                </a>
+                                <a href="#"
+                                    class="flex flex-col items-center justify-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <i class="fa fa-bell-o text-success text-xl mb-2"></i>
+                                    <span class="text-xs text-gray-600">消息通知</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- 图片卡片 -->
+                        <div class="bg-white rounded-lg overflow-hidden card-shadow">
+                            <img src="https://picsum.photos/800/400" alt="系统banner" class="w-full h-40 object-cover">
+                            <div class="p-3">
+                                <h4 class="text-sm font-medium text-gray-800">系统公告</h4>
+                                <p class="text-xs text-gray-500 mt-1">后台管理系统 v2.0 版本已更新，优化多项功能体验</p>
+                            </div>
+                        </div>
+
+                        <!-- 数据列表卡片 -->
+                        <div class="bg-white rounded-lg p-4 card-shadow">
+                            <h3 class="text-sm font-medium text-gray-800 mb-3">最新用户注册</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-2">
+                                    <img src="https://picsum.photos/36/36?random=1" class="w-7 h-7 rounded-full">
+                                    <div class="flex-1">
+                                        <p class="text-xs text-gray-800">张三</p>
+                                        <p class="text-[10px] text-gray-400">2025-12-19 10:23</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <img src="https://picsum.photos/36/36?random=2" class="w-7 h-7 rounded-full">
+                                    <div class="flex-1">
+                                        <p class="text-xs text-gray-800">李四</p>
+                                        <p class="text-[10px] text-gray-400">2025-12-19 09:15</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 状态统计卡片 -->
+                        <div class="bg-white rounded-lg p-4 card-shadow">
+                            <h3 class="text-sm font-medium text-gray-800 mb-3">服务状态</h3>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-600">服务器运行</span>
+                                    <span class="text-xs text-success">正常</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-600">数据库负载</span>
+                                    <span class="text-xs text-warning">35%</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-600">接口响应</span>
+                                    <span class="text-xs text-success">28ms</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 图表初始化脚本 -->
+    <script>
+        // 渲染访问趋势图
+        const ctx = document.getElementById('visitChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['12月13日', '12月14日', '12月15日', '12月16日', '12月17日', '12月18日', '12月19日'],
+                datasets: [{
+                    label: '访问量',
+                    data: [5200, 6800, 7500, 6200, 8000, 8300, 8562],
+                    borderColor: '#165DFF',
+                    backgroundColor: 'rgba(22, 93, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

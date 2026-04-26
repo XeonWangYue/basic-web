@@ -8,7 +8,14 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
     '@vueuse/nuxt',
+    'nuxt-echarts'
   ],
+  elementPlus: {
+    // 自动导入图标，默认前缀 ElIcon
+    icon: 'ElIcon', // 设为 false 可关闭自动导入
+    importStyle: 'css', // 按需引入样式
+    installMethods: ['ElMessage', 'ElNotification'] // 按需安装方法
+  },
   vite: {
     optimizeDeps: {
       include: [
@@ -20,7 +27,7 @@ export default defineNuxtConfig({
       ]
     }
   },
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/codicon.css'],
   imports: {
     autoImport: true // 确保全局自动导入开启（默认就是 true）
   },

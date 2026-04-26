@@ -1,0 +1,7 @@
+@import "@vscode/codicons/dist/codicon.css";
+
+.codicon {
+    font-size: 16px;
+    color: #333;
+    vertical-align: middle;
+}

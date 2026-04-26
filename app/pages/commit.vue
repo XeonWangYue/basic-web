@@ -1,5 +1,7 @@
 <script setup>
 const commitSettings = useCommitSettingsStore()
+const { isConnected, message, connect, closeSocket } = useWebSocket()
+
 
 const code = ref(`print("hello world!")`)
 const lang = ref("python")
@@ -33,6 +35,14 @@ const commitCode = async () => {
     console.log(data)
 }
 
+const connectToServer = () => {
+    if (!isConnected.value) {
+        connect()
+    }
+    else {
+        closeSocket()
+    }
+}
 
 onMounted(() => {
     window.addEventListener('resize', () => {
@@ -44,6 +54,7 @@ onMounted(() => {
     watch(userSettings, useDebounceFn((newValue) => {
         editorRef.value?.$editor.updateOptions(newValue)
     }, 1000), { deep: true, immediate: true })
+
 })
 </script>
 
@@ -58,8 +69,12 @@ onMounted(() => {
                 <el-form-item>
                     <el-button type="primary" @click="commitCode">提交</el-button>
                 </el-form-item>
+
             </el-form>
 
+            <div class="connection-status">
+                <el-button @click="connectToServer"> {{ isConnected }}</el-button>
+            </div>
         </div>
         <el-splitter layout="vertical" class="commit-spliter">
             <el-splitter-panel>
@@ -107,5 +122,9 @@ onMounted(() => {
     display: flex;
     align-items: center;
     margin-bottom: 0;
+}
+
+.connection-status {
+    margin-left: auto;
 }
 </style>
