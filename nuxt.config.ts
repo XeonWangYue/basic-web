@@ -2,7 +2,13 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@element-plus/nuxt', 'nuxt-monaco-editor'],
+  modules: [
+    '@element-plus/nuxt',
+    'nuxt-monaco-editor',
+    '@pinia/nuxt',
+    'pinia-plugin-persistedstate/nuxt',
+    '@vueuse/nuxt',
+  ],
   vite: {
     optimizeDeps: {
       include: [

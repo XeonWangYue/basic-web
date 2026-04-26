@@ -16,11 +16,13 @@ const { accessToken, logout } = useAuth()
       </el-menu>
     </el-aside>
     <el-container>
-      <el-header height="60">
-        <el-row justify="space-between">
+      <el-header class="header-row">
+        <el-row justify="space-between" class="header-row-container">
           <el-col :span="2">Header</el-col>
           <el-col :span="2">
-            <el-button type="primary" @click="logout" v-show="accessToken">登出</el-button>
+            <ClientOnly>
+              <el-button type="primary" @click="logout" v-show="accessToken">登出</el-button>
+            </ClientOnly>
           </el-col>
         </el-row>
       </el-header>
@@ -39,5 +41,15 @@ const { accessToken, logout } = useAuth()
 
 .main-menu {
   height: 100%;
+}
+
+.header-row {
+  height: 56px;
+  border-bottom: 1px solid #dcdfe6;
+}
+
+.header-row-container {
+  height: 100%;
+  align-items: center;
 }
 </style>
