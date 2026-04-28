@@ -158,14 +158,14 @@ const setFilter = (verdict: string | null) => {
 
 // Initialize default code
 const initDefaultCode = (problemId: string) => {
+    if (!import.meta.client) {
+        return
+    }
     const savedCode = localStorage.getItem(`code_${problemId}_${language.value}`)
     code.value = savedCode || defaultTemplates[language.value as keyof typeof defaultTemplates] || ''
 }
 
-if (import.meta.client) {
-    initDefaultCode("1")
-}
-
+initDefaultCode(route.params.id as string)
 
 // Language change
 const handleLanguageChange = (newLang: string) => {
@@ -194,10 +194,10 @@ const handleSaveCode = async () => {
 
 // Submit
 const handleSubmit = async () => {
-    // if (!route.params.id) {
-    //     ElMessage.warning('无法获取题目 ID')
-    //     return
-    // }
+    if (!route.params.id) {
+        ElMessage.warning('无法获取题目 ID')
+        return
+    }
     if (!code.value.trim()) {
         ElMessage.warning('代码不能为空')
         return

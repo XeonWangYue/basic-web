@@ -1,6 +1,6 @@
 <script setup>
 const { accessToken, logout } = useAuth()
-
+import { HomeFilled, EditPen, User, Document, Monitor } from '@element-plus/icons-vue'
 </script>
 <template>
   <NuxtRouteAnnouncer />
@@ -8,11 +8,50 @@ const { accessToken, logout } = useAuth()
     <el-aside width="200px">
       <el-menu class="main-menu" :router="true">
         <el-menu-item index="/">
-          首页
+          <el-icon>
+            <HomeFilled />
+          </el-icon>
+          <span>首页</span>
         </el-menu-item>
         <el-menu-item index="/commit">
-          提交测试
+          <el-icon>
+            <EditPen />
+          </el-icon>
+          <span>提交测试</span>
         </el-menu-item>
+        <el-sub-menu index="user">
+          <template #title>
+            <el-icon>
+              <User />
+            </el-icon>
+            <span>用户管理</span>
+          </template>
+          <el-menu-item index="/user/account">用户账号管理</el-menu-item>
+          <el-menu-item index="/user/group">用户组管理</el-menu-item>
+          <el-menu-item index="/user/role">角色管理</el-menu-item>
+          <el-menu-item index="/user/permission">权限管理</el-menu-item>
+        </el-sub-menu>
+        <el-sub-menu index="problem">
+          <template #title>
+            <el-icon>
+              <Document />
+            </el-icon>
+            <span>题目管理</span>
+          </template>
+          <el-menu-item index="/problem/list">题目管理</el-menu-item>
+          <el-menu-item index="/problem/testcase">用例管理</el-menu-item>
+          <el-menu-item index="/problem/judge-settings">判题设置</el-menu-item>
+        </el-sub-menu>
+        <el-sub-menu index="judger">
+          <template #title>
+            <el-icon>
+              <Monitor />
+            </el-icon>
+            <span>判题机管理</span>
+          </template>
+          <el-menu-item index="/judger/load">负载监控</el-menu-item>
+          <el-menu-item index="/judger/environment">环境修改</el-menu-item>
+        </el-sub-menu>
       </el-menu>
     </el-aside>
     <el-container>

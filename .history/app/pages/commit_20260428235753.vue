@@ -9,52 +9,62 @@
         <el-splitter class="main-workspace">
             <!-- ====== 左侧面板：题目详情 + 测试用例 ====== -->
             <el-splitter-panel class="left-panel">
-                <el-tabs v-model="activePanel">
-                    <el-tab-pane label="题目详情" name="question">
-                        <div class="left-panel-top">
-                            <ProblemDetail :problem-data="problemData" />
-                        </div>
-                        <div class="left-panel-bottom">
-                            <TestcasePanel :testcases="testcases" :selected-testcase-index="selectedTestcaseIndex"
-                                @add-testcase="addTestcase" @select-testcase="selectTestcase"
-                                @remove-testcase="removeTestcase" />
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane label="提交结果" name="submission">
-                        <!-- 评测结果 -->
-                        <SubmissionPanel :submitting="submitting" :submit-polling="submitPolling"
-                            :submit-polling-count="submitPollingCount" :submission-id="submissionId"
-                            :submission-result="submissionResult" :expanded-results="expandedResults"
-                            :filter-verdict="filterVerdict" @toggle-expand="toggleExpand" @set-filter="setFilter" />
-                    </el-tab-pane>
-                </el-tabs>
-
-
-
+                <div class="left-panel-top">
+                    <ProblemDetail :problem-data="problemData" />
+                </div>
+                <div class="left-panel-bottom">
+                    <TestcasePanel :testcases="testcases" :selected-testcase-index="selectedTestcaseIndex"
+                        @add-testcase="addTestcase" @select-testcase="selectTestcase"
+                        @remove-testcase="removeTestcase" />
+                </div>
             </el-splitter-panel>
 
             <!-- ====== 右侧面板：代码编辑器（上）+ 运行样例（下） ====== -->
             <el-splitter-panel class="right-panel">
-                <el-splitter layout="vertical">
-                    <!-- 右上：答案提交（代码编辑器 + 评测结果） -->
-                    <el-splitter-panel class="right-panel-top">
-                        <div class="editor-tab-content">
-                            <!-- 代码编辑器 -->
-                            <div class="editor-wrapper">
-                                <div ref="editorContainer" style="width: 100%; height: 100%;"></div>
-                            </div>
-
+                <!-- 右上：答案提交（代码编辑器 + 评测结果） -->
+                <div class="right-panel-top">
+                    <div class="editor-tabs">
+                        <div class="editor-tab" :class="{ active: activePanel === 'editor' }"
+                            @click="activePanel = 'editor'">
+                            <el-icon>
+                                <Document />
+                            </el-icon>
+                            代码编辑
                         </div>
-                    </el-splitter-panel>
+                        <div class="editor-tab" :class="{ active: activePanel === 'result' }"
+                            @click="activePanel = 'result'">
+                            <el-icon>
+                                <Promotion />
+                            </el-icon>
+                            评测结果
+                            <el-tag v-if="submissionResult" :type="getStatusTagType" size="small" effect="dark"
+                                class="result-badge">
+                                {{ submissionResult?.verdict || submissionResult?.status || '' }}
+                            </el-tag>
+                        </div>
+                    </div>
+                    <div class="editor-tab-content">
+                        <!-- 代码编辑器 -->
+                        <div v-show="activePanel === 'editor'" class="editor-wrapper">
+                            <div ref="editorContainer" style="width: 100%; height: 100%;"></div>
+                        </div>
+                        <!-- 评测结果 -->
+                        <div v-show="activePanel === 'result'" class="result-wrapper">
+                            <SubmissionPanel :submitting="submitting" :submit-polling="submitPolling"
+                                :submit-polling-count="submitPollingCount" :submission-id="submissionId"
+                                :submission-result="submissionResult" :expanded-results="expandedResults"
+                                :filter-verdict="filterVerdict" @toggle-expand="toggleExpand" @set-filter="setFilter" />
+                        </div>
+                    </div>
+                </div>
 
-                    <!-- 右下：运行样例 -->
-                    <el-splitter-panel class="right-panel-bottom">
-                        <SamplePanel v-model="sampleStdin" :sample-running="sampleRunning"
-                            :sample-exec-result="sampleExecResult" :sample-exec-error="sampleExecError"
-                            :sample-exec-polling-count="sampleExecPollingCount" :sample-console-log="sampleConsoleLog"
-                            @run-sample="handleRunSample" />
-                    </el-splitter-panel>
-                </el-splitter>
+                <!-- 右下：运行样例 -->
+                <div class="right-panel-bottom">
+                    <SamplePanel v-model="sampleStdin" :sample-running="sampleRunning"
+                        :sample-exec-result="sampleExecResult" :sample-exec-error="sampleExecError"
+                        :sample-exec-polling-count="sampleExecPollingCount" :sample-console-log="sampleConsoleLog"
+                        @run-sample="handleRunSample" />
+                </div>
             </el-splitter-panel>
         </el-splitter>
 
@@ -90,7 +100,7 @@ const {
 } = useSubmission()
 
 // Panel state
-const activePanel = ref('question')
+const activePanel = ref('editor')
 const showSettingsDialog = ref(false)
 const editorContainer = useTemplateRef("editorContainer")
 let editor: any = null
@@ -158,14 +168,14 @@ const setFilter = (verdict: string | null) => {
 
 // Initialize default code
 const initDefaultCode = (problemId: string) => {
+    if (!import.meta.client) {
+        return
+    }
     const savedCode = localStorage.getItem(`code_${problemId}_${language.value}`)
     code.value = savedCode || defaultTemplates[language.value as keyof typeof defaultTemplates] || ''
 }
 
-if (import.meta.client) {
-    initDefaultCode("1")
-}
-
+initDefaultCode(route.params.id as string)
 
 // Language change
 const handleLanguageChange = (newLang: string) => {
@@ -194,10 +204,10 @@ const handleSaveCode = async () => {
 
 // Submit
 const handleSubmit = async () => {
-    // if (!route.params.id) {
-    //     ElMessage.warning('无法获取题目 ID')
-    //     return
-    // }
+    if (!route.params.id) {
+        ElMessage.warning('无法获取题目 ID')
+        return
+    }
     if (!code.value.trim()) {
         ElMessage.warning('代码不能为空')
         return

@@ -194,10 +194,10 @@ const handleSaveCode = async () => {
 
 // Submit
 const handleSubmit = async () => {
-    // if (!route.params.id) {
-    //     ElMessage.warning('无法获取题目 ID')
-    //     return
-    // }
+    if (!route.params.id) {
+        ElMessage.warning('无法获取题目 ID')
+        return
+    }
     if (!code.value.trim()) {
         ElMessage.warning('代码不能为空')
         return

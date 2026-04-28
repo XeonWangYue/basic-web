@@ -2,61 +2,73 @@
     <div class="page-container commit-page">
         <!-- 顶部操作栏 -->
         <CommitHeader :code="code" :language="language" :loading="submitting" :last-saved-time="lastSavedTime"
-            :problem-data="problemData" @language-change="handleLanguageChange" @save="handleSaveCode"
-            @submit="handleSubmit" @toggle-panel="togglePanel" @settings="showSettingsDialog = true" />
+            @language-change="handleLanguageChange" @save="handleSaveCode" @submit="handleSubmit"
+            @toggle-panel="togglePanel" @settings="showSettingsDialog = true" />
 
-        <!-- 主体工作区：左右两栏 -->
-        <el-splitter class="main-workspace">
-            <!-- ====== 左侧面板：题目详情 + 测试用例 ====== -->
-            <el-splitter-panel class="left-panel">
-                <el-tabs v-model="activePanel">
-                    <el-tab-pane label="题目详情" name="question">
-                        <div class="left-panel-top">
-                            <ProblemDetail :problem-data="problemData" />
-                        </div>
-                        <div class="left-panel-bottom">
-                            <TestcasePanel :testcases="testcases" :selected-testcase-index="selectedTestcaseIndex"
-                                @add-testcase="addTestcase" @select-testcase="selectTestcase"
-                                @remove-testcase="removeTestcase" />
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane label="提交结果" name="submission">
-                        <!-- 评测结果 -->
-                        <SubmissionPanel :submitting="submitting" :submit-polling="submitPolling"
-                            :submit-polling-count="submitPollingCount" :submission-id="submissionId"
-                            :submission-result="submissionResult" :expanded-results="expandedResults"
-                            :filter-verdict="filterVerdict" @toggle-expand="toggleExpand" @set-filter="setFilter" />
-                    </el-tab-pane>
-                </el-tabs>
+        <!-- 题目信息区域 -->
+        <ProblemDetail :problem-data="problemData" />
 
+        <!-- 代码编辑器和结果面板 -->
+        <div class="main-content">
+            <!-- 编辑器区域 -->
+            <div class="editor-section">
+                <div class="editor-wrapper">
+                    <el-scrollbar>
+                        <div ref="editorContainer" style="width: 100%; height: 100%;"></div>
+                    </el-scrollbar>
+                </div>
+            </div>
 
+            <!-- 右侧结果面板 -->
+            <div class="result-panel-wrapper">
+                <!-- 顶部切换标签 -->
+                <div class="panel-switch-tabs">
+                    <div class="panel-tab" :class="{ active: activePanel === 'result' }"
+                        @click="activePanel = 'result'">
+                        <el-icon>
+                            <Document />
+                        </el-icon>
+                        评测结果
+                    </div>
+                    <div class="panel-tab" :class="{ active: activePanel === 'run' }" @click="activePanel = 'run'">
+                        <el-icon>
+                            <CaretRight />
+                        </el-icon>
+                        样例运行
+                    </div>
+                    <div class="panel-tab" :class="{ active: activePanel === 'testcase' }"
+                        @click="activePanel = 'testcase'">
+                        <el-icon>
+                            <List />
+                        </el-icon>
+                        测试用例
+                    </div>
+                </div>
 
-            </el-splitter-panel>
+                <!-- 评测结果 -->
+                <div v-if="activePanel === 'result'" class="result-panel">
+                    <SubmissionPanel :submitting="submitting" :submit-polling="submitPolling"
+                        :submit-polling-count="submitPollingCount" :submission-id="submissionId"
+                        :submission-result="submissionResult" :expanded-results="expandedResults"
+                        :filter-verdict="filterVerdict" @toggle-expand="toggleExpand" @set-filter="setFilter" />
+                </div>
 
-            <!-- ====== 右侧面板：代码编辑器（上）+ 运行样例（下） ====== -->
-            <el-splitter-panel class="right-panel">
-                <el-splitter layout="vertical">
-                    <!-- 右上：答案提交（代码编辑器 + 评测结果） -->
-                    <el-splitter-panel class="right-panel-top">
-                        <div class="editor-tab-content">
-                            <!-- 代码编辑器 -->
-                            <div class="editor-wrapper">
-                                <div ref="editorContainer" style="width: 100%; height: 100%;"></div>
-                            </div>
+                <!-- 样例运行 -->
+                <div v-if="activePanel === 'run'" class="result-panel">
+                    <SamplePanel v-model="sampleStdin" :sample-running="sampleRunning"
+                        :sample-exec-result="sampleExecResult" :sample-exec-error="sampleExecError"
+                        :sample-exec-polling-count="sampleExecPollingCount" :sample-console-log="sampleConsoleLog"
+                        @run-sample="handleRunSample" />
+                </div>
 
-                        </div>
-                    </el-splitter-panel>
-
-                    <!-- 右下：运行样例 -->
-                    <el-splitter-panel class="right-panel-bottom">
-                        <SamplePanel v-model="sampleStdin" :sample-running="sampleRunning"
-                            :sample-exec-result="sampleExecResult" :sample-exec-error="sampleExecError"
-                            :sample-exec-polling-count="sampleExecPollingCount" :sample-console-log="sampleConsoleLog"
-                            @run-sample="handleRunSample" />
-                    </el-splitter-panel>
-                </el-splitter>
-            </el-splitter-panel>
-        </el-splitter>
+                <!-- 测试用例 -->
+                <div v-if="activePanel === 'testcase'" class="result-panel">
+                    <TestcasePanel :testcases="testcases" :selected-testcase-index="selectedTestcaseIndex"
+                        @add-testcase="addTestcase" @select-testcase="selectTestcase"
+                        @remove-testcase="removeTestcase" />
+                </div>
+            </div>
+        </div>
 
         <!-- 设置对话框 -->
         <EditorSettingsDialog v-model="showSettingsDialog" :settings="settings" @close="showSettingsDialog = false"
@@ -68,8 +80,12 @@
 
 import {
     Document,
-    Promotion,
+    CaretRight,
+    List,
 } from '@element-plus/icons-vue'
+
+
+
 
 import { ElMessage } from 'element-plus'
 import type { EditorSettings } from '~/constants/commit'
@@ -90,11 +106,10 @@ const {
 } = useSubmission()
 
 // Panel state
-const activePanel = ref('question')
+const activePanel = ref('result')
 const showSettingsDialog = ref(false)
 const editorContainer = useTemplateRef("editorContainer")
 let editor: any = null
-let monacoRef: any = null
 
 // Code & language state
 const code = ref('')
@@ -130,17 +145,6 @@ const problemData = ref<any>({
     difficulty: '简单',
 })
 
-// Status tag type for result badge
-const getStatusTagType = computed(() => {
-    if (!submissionResult.value) return 'info'
-    const verdict = submissionResult.value?.verdict || submissionResult.value?.status || ''
-    const map: Record<string, string> = {
-        'AC': 'success', 'WA': 'danger', 'TLE': 'warning',
-        'MLE': 'warning', 'RE': 'danger', 'CE': 'danger',
-    }
-    return (map[verdict] || 'info') as any
-})
-
 // Toggle panel
 const togglePanel = (panel: string) => {
     activePanel.value = panel
@@ -158,14 +162,14 @@ const setFilter = (verdict: string | null) => {
 
 // Initialize default code
 const initDefaultCode = (problemId: string) => {
+    if (!import.meta.client) {
+        return
+    }
     const savedCode = localStorage.getItem(`code_${problemId}_${language.value}`)
     code.value = savedCode || defaultTemplates[language.value as keyof typeof defaultTemplates] || ''
 }
 
-if (import.meta.client) {
-    initDefaultCode("1")
-}
-
+initDefaultCode(route.params.id as string)
 
 // Language change
 const handleLanguageChange = (newLang: string) => {
@@ -175,10 +179,10 @@ const handleLanguageChange = (newLang: string) => {
     language.value = newLang
     const savedCode = localStorage.getItem(`code_${route.params.id}_${newLang}`)
     code.value = savedCode || defaultTemplates[newLang as keyof typeof defaultTemplates] || ''
-    if (editor && monacoRef) {
+    if (editor) {
         const model = editor.getModel()
         if (model) {
-            monacoRef.editor.setModelLanguage(model, newLang)
+            monaco.editor.setModelLanguage(model, newLang)
             editor.setValue(code.value)
         }
     }
@@ -194,10 +198,10 @@ const handleSaveCode = async () => {
 
 // Submit
 const handleSubmit = async () => {
-    // if (!route.params.id) {
-    //     ElMessage.warning('无法获取题目 ID')
-    //     return
-    // }
+    if (!route.params.id) {
+        ElMessage.warning('无法获取题目 ID')
+        return
+    }
     if (!code.value.trim()) {
         ElMessage.warning('代码不能为空')
         return
@@ -216,6 +220,7 @@ const handleRunSample = async () => {
         ElMessage.warning('代码不能为空')
         return
     }
+    activePanel.value = 'run'
     await handleSampleRun(code.value, language.value)
 }
 
@@ -248,18 +253,14 @@ const handleSettingsSave = (newSettings: EditorSettings) => {
             minimap: { enabled: newSettings.minimap },
             lineNumbers: newSettings.lineNumbers as any,
         })
-        if (monacoRef) {
-            monacoRef.editor.setTheme(newSettings.theme)
-        }
+        monaco.editor.setTheme(newSettings.theme)
     }
 }
 
 // Editor initialization
-onMounted(async () => {
+onMounted(() => {
     if (import.meta.client && editorContainer.value) {
         const monaco = await import('monaco-editor')
-        monacoRef = monaco
-
         editor = monaco.editor.create(editorContainer.value, {
             value: code.value,
             language: language.value,
@@ -290,15 +291,14 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-    if (editor) {
-        editor.dispose()
-        editor = null
-    }
-    monacoRef = null
+    // if (editor) {
+    //     editor.dispose()
+    //     editor = null
+    // }
 })
 
 </script>
 
-<style>
+<style scoped>
 @import "~/assets/css/commit.css";
 </style>
